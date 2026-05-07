@@ -7,8 +7,9 @@ import java.util.Objects;
 public class Pedido {
 
     private List<Item> itens = new ArrayList<>();
-    private Double valorTotal;
-    private Double valorDesconto;
+    private Double valorTotal = 0.0;
+    private Double valorFinal = 0.0;
+    private Double valorDesconto = 0.0;
 
     public Pedido() {
     }
@@ -48,8 +49,28 @@ public class Pedido {
     public void adicionarItem(Item item) {
         itens.add(item);
         setItens(itens);
+    }
 
-        calcularValorTotalDoPedido();
+    public Double getValorFinal() {
+        return valorFinal;
+    }
+
+    public void setValorFinal(Double valorFinal) {
+        this.valorFinal = valorFinal;
+    }
+
+    public void calcularValorFinalDoPedido() {
+        double valorTotal = itens.stream()
+                .map(item -> item.getPreco() * item.getQuantidade())
+                .reduce(0.0, Double::sum);
+
+        setValorFinal(valorTotal - valorDesconto);
+    }
+
+    public void adicionarItens(List<Item> novosItens) {
+        itens.addAll(novosItens);
+
+        setItens(itens);
     }
 
     public void calcularValorTotalDoPedido() {
@@ -58,5 +79,12 @@ public class Pedido {
                 .reduce(0.0, Double::sum);
 
         setValorTotal(valorTotal);
+    }
+
+    public void fecharPedido() {
+        calcularValorTotalDoPedido();
+        calcularValorFinalDoPedido();
+
+        itens.forEach(Item::toString);
     }
 }
